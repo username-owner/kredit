@@ -2,7 +2,6 @@ const CACHE_NAME = 'credit-calculator-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/style.css',
   'logo192.jpg',
   'logo512.jpg'
 ];
