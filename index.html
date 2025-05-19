@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3498db">
     <title>Кредитный калькулятор</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -99,6 +103,11 @@
         }
         button:hover {
             background-color: #2980b9;
+        }
+        #installButton {
+            background-color: #4CAF50;
+            display: none;
+            margin: 0 auto 20px;
         }
     </style>
 </head>
@@ -418,6 +427,40 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2 
             }).format(amount) + ' ' + currencySymbols[currency];
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+        
+        installButton.addEventListener('click', async () => {
+            if(deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if(outcome === 'accepted') {
+                    installButton.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+        
+        // Service Worker Registration
+        if('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('serviceworker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker успешно зарегистрирован:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Ошибка регистрации ServiceWorker:', error);
+                    });
+            });
         }
     </script>
 </body>
